@@ -1,103 +1,231 @@
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mohit Vishwakarma - Resume Website</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-    body {
-      background-color: #f4f6f8;
-      color: #222;
-      padding: 30px;
-    }
-    .container {
-      max-width: 850px;
-      margin: auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      font-size: 2.5rem;
-      color: #2c3e50;
-    }
-    .header p {
-      font-size: 1rem;
-      color: #666;
-    }
-    h2 {
-      margin-top: 30px;
-      font-size: 1.5rem;
-      color: #2c3e50;
-      border-left: 4px solid #3498db;
-      padding-left: 10px;
-    }
-    ul {
-      margin: 10px 0 20px 25px;
-    }
-    ul li {
-      margin-bottom: 8px;
-    }
-    a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #888;
-      font-size: 0.9rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohit Demo - Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Mohit Vishwakarma</h1>
-      <p>Frontend Developer | Resume Website Specialist</p>
-    </div>
+   <header>
+    <nav>
+        <div class="nav-brand">Mohit Demo</div>
+        <div class="nav-toggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#education-tools">Education & Tools</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <h2>About Me</h2>
-    <p>
-      I create modern and responsive resume or portfolio websites using HTML, CSS, and Bootstrap. I make your online presence look professional, mobile-friendly, and fast-loading.
-    </p>
+    <section id="home">
+        <h1>Mohit Demo</h1>
+        <h2>Director of People & Operations | Recruiting Leader  | Organizational Strategist</h2>
+        <p>Experienced leader with 9+ years scaling organizations, modernizing talent acquisition, and building operational infrastructure.</p>
+        <a href="#contact" class="cta-btn">Get in Touch</a>
+    </section>
 
-    <h2>What I Offer</h2>
-    <ul>
-      <li>Responsive Resume Website (HTML/CSS/Bootstrap)</li>
-      <li>Mobile-Friendly Design</li>
-      <li>GitHub Hosting or ZIP Delivery</li>
-      <li>Modern & Clean UI</li>
-      <li>Optional Contact Form & Download Resume Button</li>
-    </ul>
+    <section id="about">
+        <h2>About</h2>
+        <p>Experienced People & Operations leader with a track record of building and scaling recruiting systems, optimizing organizational processes, and driving high-impact people strategies. Skilled in leading full-cycle recruiting, designing talent pipelines, implementing AI tools, and coaching hiring teams through structured and technical interviews. Known for aligning people operations with company growth goals while enhancing the employee experience, compliance, and culture. Trusted advisor to executive leadership with experience in consulting, high-growth, and remote-first environments.</p>
+        <h3>Core Competencies</h3>
+        <ul>
+            <li>Full-Cycle Recruiting & Talent Strategy</li>
+            <li>Organizational Design & Workforce Planning</li>
+            <li>Structured & Technical Interviewing</li>
+            <li>Performance Management & Engagement</li>
+            <li>Leadership Coaching & People Operations</li>
+            <li>HR Compliance & Policy Development</li>
+            <li>TriNet</li>
+            <li>AI Recruiting Tools (Popp AI)</li>
+            <li>Remote & Hybrid Team Enablement</li>
+            <li>Cross-Functional Stakeholder Management</li>
+        </ul>
+    </section>
 
-    <h2>Project Sample</h2>
-    <p>
-      Live Demo: 
-      <a href="https://mohitvish4248.github.io/mohit-portfolio" target="_blank">
-        mohitvish4248.github.io/mohit-portfolio
-      </a>
-    </p>
+    <section id="experience">
+        <h2>Professional Experience</h2>
+        <div class="job">
+            <h3>Director of People & Operations, TD Thornton</h3>
+            <p><em>Sunnyvale, CA | Dec 2023 – Jul 2025</em></p>
+            <ul>
+                <li>Oversaw People & Operations strategy for a consulting firm managing $1B+ in infrastructure and utility projects.</li>
+                <li>Designed and led the recruiting strategy, including implementation of Popp AI and creation of a scalable talent pipeline.</li>
+                <li>Reduced time-to-hire by streamlining interview processes and introducing structured and technical interview training.</li>
+                <li>Championed company-wide performance evaluation and feedback programs, contributing to 90% employee retention.</li>
+                <li>Partnered with leadership on compensation planning, DEI strategy, and compliance across multi-state operations.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>People & Operations Manager, TD Thornton</h3>
+            <p><em>Sunnyvale, CA | Jan 2021 – Dec 2023</em></p>
+            <ul>
+                <li>Led all recruiting and HR functions for a fast-growing consulting team, scaling from 9 to 60 employees.</li>
+                <li>Built just-in-time hiring pipelines and supported client staffing needs through workforce planning.</li>
+                <li>Developed recruiting assets and templates, coached hiring managers, and optimized candidate experience.</li>
+                <li>Supported compliance and onboarding processes for a fully remote, multi-state workforce.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>Senior Administrative Specialist, TD Thornton</h3>
+            <p><em>Sunnyvale, CA | Jun 2018 – Jan 2021</em></p>
+            <ul>
+                <li>Supported executive leadership with scheduling, onboarding coordination, and candidate communication.</li>
+                <li>Played a key role in early HR systems implementation and internal operations scaling.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>Office Manager, Jade Orchard – Digital Marketing Agency</h3>
+            <p><em>Oakland, CA | Mar 2017 – Jan 2019</em></p>
+            <ul>
+                <li>Managed internal operations and recruiting for a remote marketing agency.</li>
+                <li>Handled candidate sourcing, interview coordination, onboarding, and employee documentation.</li>
+                <li>Supported the CEO with vendor management and executive operations.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <h3>Senior Living Counselor & Coordinator St. Paul’s Towers - Episcopal Senior Communities</h3>
+            <p><em>Oakland, CA | Mar 2014 – Mar 2017</em></p>
+            <ul>
+                <li>Managed new resident onboarding and sales, closing over $1M in contracts.</li>
+                <li>Led outreach, admissions coordination, and internal staff collaboration to improve resident experience.</li>
+            </ul>
+        </div>
+    </section>
 
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:mohitxxxxxxxxxxxx.com">mohitxxxxxxxx@gmail.com</a></p>
-    <p>LinkedIn: <a href="https://www.linkedin.com/xxxxxxx" target="_blank">linkedin.com/in/XXXXXXXXXX</a></p>
+    <section id="education-tools">
+        <h2>Education & Tools</h2>
+        <h3>Education</h3>
+        <p><strong>Santa Clara University</strong><br>Bachelor of Science in Business Management, Minor in English</p>
+        <h3>Tools & Platforms</h3>
+        <ul>
+            <li>Popp AI</li>
+            <li>Lever ATS</li>
+            <li>TriNet HRIS</li>
+            <li>Slack</li>
+            <li>LinkedIn Recruiter</li>
+            <li>Expensify</li>
+            <li>Zywave LMS</li>
+            <li>T-Sheets</li>
+            <li>Asana</li>
+            <li>HubSpot</li>
+        </ul>
+    </section>
 
-    <div class="footer">
-      &copy; 2025 Mohit Vishwakarma. All rights reserved.
-    </div>
-  </div>
+    <section id="contact">
+        <h2>Contact</h2>
+        <form id="enquiryForm">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <textarea name="message" placeholder="Message" required></textarea>
+            <button type="submit">Send Message</button>
+            <p id="form-status"></p>
+        </form>
+        <div class="button-group">
+            <a href="https://www.linkedin.com/in/mohitvish/" class="linkedin-btn">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" class="linkedin-icon">
+                LinkedIn Profile
+            </a>
+        </div>
+    </section>
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script>
+    (function() {
+        emailjs.init("");
+    })();
+
+    const form = document.getElementById("enquiryForm");
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const status = document.getElementById("form-status");
+            const email = form.email.value.trim();
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+            if (!emailPattern.test(email)) {
+                status.textContent = "❌ Please enter a valid Gmail address (e.g. yourname@gmail.com)";
+                status.style.color = "red";
+                return;
+            }
+
+            emailjs.sendForm("", "", form)
+                .then(() => {
+                    status.textContent = "✅ Enquiry Sent Successfully!";
+                    status.style.color = "#10b981";
+                    form.reset();
+                }, (err) => {
+                    status.textContent = "❌ Failed to send. Please try again.";
+                    status.style.color = "red";
+                    console.log(err);
+                });
+        });
+    }
+    </script>
+
+    <!-- Navbar toggle -->
+    <script>
+    const navToggle = document.querySelector(".nav-toggle");
+    const navMenu = document.querySelector(".nav-menu");
+
+    navToggle.addEventListener("click", () => {
+        navMenu.classList.toggle("active");
+    });
+
+    document.querySelectorAll(".nav-menu a").forEach(link => {
+        link.addEventListener("click", () => {
+            navMenu.classList.remove("active");
+        });
+    });
+    </script>
 </body>
 </html>
